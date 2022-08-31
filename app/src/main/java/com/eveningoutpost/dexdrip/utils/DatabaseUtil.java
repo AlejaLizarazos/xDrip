@@ -231,7 +231,7 @@ public class DatabaseUtil {
                 printStream = new PrintStream(zipOutputStream);
 
                 //add Treatment and BGlucose Header
-                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
+                printStream.println("DAY;TIME;UDT_CGMS;GCMS_RAW;BG_LEVEL;CH_GR;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
 
@@ -250,6 +250,19 @@ public class DatabaseUtil {
 
                 //Extract CGMS-Values
                 Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp = cur.getLong(0);
+                        value = cur.getDouble(1);
+                        if (value > 13) {
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
+                        }
+                    } while (cur.moveToNext());
+                }
+
+                //Extract Raw CGMS-Values
+                cur = db.query("bgreadings", new String[]{"timestamp", "raw_data"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
