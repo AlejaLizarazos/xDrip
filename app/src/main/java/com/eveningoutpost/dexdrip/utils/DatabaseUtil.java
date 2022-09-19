@@ -256,7 +256,7 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 13) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;;");
                         }
                     } while (cur.moveToNext());
                 }
@@ -267,9 +267,9 @@ public class DatabaseUtil {
                     do {
                         timestamp = cur.getLong(0);
                         value = cur.getDouble(1);
-                        if (value > 13) {
+                        if (value > 0) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
+                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;;");
                         }
                     } while (cur.moveToNext());
                 }
@@ -282,7 +282,7 @@ public class DatabaseUtil {
                         value = cur.getDouble(1);
                         if (value > 0) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;");
+                            printStream.println(df.format(date) + ";;" + Math.round(value) + ";;;");
                         }
                     } while (cur.moveToNext());
                 }
@@ -301,7 +301,7 @@ public class DatabaseUtil {
                         notes= notes.replaceAll("\n","||"); //convert linefeed to SiDiary conform expression
                         if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);
+                            printStream.println(df.format(date) + ";;;" + valueCHO + ";" + valueIE + ";" + notes);
                         }
                     } while (cur.moveToNext());
                 }
