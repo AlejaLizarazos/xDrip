@@ -237,6 +237,7 @@ public class DatabaseUtil {
 
                 // Set all needed Vars
                 double value;
+                double value_raw;
                 String valueIE;
                 String valueCHO;
                 String notes;
@@ -249,27 +250,15 @@ public class DatabaseUtil {
                 Date date = new Date();
 
                 //Extract CGMS-Values
-                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value", "raw_data"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
                         value = cur.getDouble(1);
+                        value_raw = cur.getDouble(2);
                         if (value > 13) {
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value) + ";;;;;");
-                        }
-                    } while (cur.moveToNext());
-                }
-
-                //Extract Raw CGMS-Values
-                cur = db.query("bgreadings", new String[]{"timestamp", "raw_data"}, "timestamp >= " + from, null, null, null, "timestamp ASC");//KS
-                if (cur.moveToFirst()) {
-                    do {
-                        timestamp = cur.getLong(0);
-                        value = cur.getDouble(1);
-                        if (value > 0) {
-                            date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;;");
+                            printStream.println(df.format(date) + Math.round(value) + ";" + Math.round(value_raw) +";;;;");
                         }
                     } while (cur.moveToNext());
                 }
