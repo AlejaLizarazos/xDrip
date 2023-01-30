@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.*;
 import static com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Dex_Constants.TREND_ARROW_VALUES.*;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
@@ -112,6 +113,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Expose
     @Column(name = "calculated_value")
     public double calculated_value;
+
+    @Expose
+    @Column(name = "level_raw")
+    public TREND_ARROW_VALUES level_raw;
 
     @Expose
     @Column(name = "filtered_calculated_value")
@@ -194,7 +199,9 @@ public class BgReading extends Model implements ShareUploadableBg {
         final String[] updates = new String[]{"ALTER TABLE BgReadings ADD COLUMN dg_mgdl REAL;",
                 "ALTER TABLE BgReadings ADD COLUMN dg_slope REAL;",
                 "ALTER TABLE BgReadings ADD COLUMN dg_delta_name TEXT;",
-                "ALTER TABLE BgReadings ADD COLUMN source_info TEXT;"};
+                "ALTER TABLE BgReadings ADD COLUMN source_info TEXT;",
+                "ALTER TABLE BgReadings ADD COLUMN level_raw REAL;"
+            };
         for (String patch : updates) {
             try {
                 SQLiteUtils.execSql(patch);
@@ -371,6 +378,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
                 double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+                bgReading.level_raw = egvRecord.getTrend();
             }
             Log.i(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
